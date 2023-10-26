@@ -1,5 +1,6 @@
 $(document).ready(() => {
     
+	
     // Upgrade settings file to latest version
     upgradeSettings();
     
