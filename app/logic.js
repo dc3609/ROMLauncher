@@ -613,47 +613,46 @@ function loadGeneralSettings() {
                 let buttonValue = parseInt(value);
                 if (!isNaN(buttonValue)) {
                     $('.controller_mapping').eq(mappingIndex).val(buttonValue);
-                    
-                    switch(mappingIndex) {
-                        case 0:
-                        gpUpButton = buttonValue;
-                        break;
-                        case 1:
-                        gpDownButton = buttonValue;
-                        break;
-                        case 2:
-                        gpLeftButton = buttonValue;
-                        break;
-                        case 3:
-                        gpRightButton = buttonValue;
-                        break;
-                        case 4:
-                        gpAButton = buttonValue;
-                        break;
-                        case 5:
-                        gpBButton = buttonValue;
-                        break;
-                        case 6:
-                        gpLButton = buttonValue;
-                        break;
-                        case 7:
-                        gpRButton = buttonValue;
-                        break;
-                        case 8:
-                        forceQuitButtons.push(buttonValue);
-                        break;
-                        case 9:
-                        forceQuitButtons.push(buttonValue);
-                        break;
-                        case 10:
-                        forceQuitButtons.push(buttonValue);
-                        break;
-                        case 11:
-                        forceQuitButtons.push(buttonValue);
-                        break;
-                        default:
-                        break;
-                    }
+                }
+                switch(mappingIndex) {
+                    case 0:
+                    gpUpButton = buttonValue;
+                    break;
+                    case 1:
+                    gpDownButton = buttonValue;
+                    break;
+                    case 2:
+                    gpLeftButton = buttonValue;
+                    break;
+                    case 3:
+                    gpRightButton = buttonValue;
+                    break;
+                    case 4:
+                    gpAButton = buttonValue;
+                    break;
+                    case 5:
+                    gpBButton = buttonValue;
+                    break;
+                    case 6:
+                    gpLButton = buttonValue;
+                    break;
+                    case 7:
+                    gpRButton = buttonValue;
+                    break;
+                    case 8:
+                    forceQuitButtons.push(buttonValue);
+                    break;
+                    case 9:
+                    forceQuitButtons.push(buttonValue);
+                    break;
+                    case 10:
+                    forceQuitButtons.push(buttonValue);
+                    break;
+                    case 11:
+                    forceQuitButtons.push(buttonValue);
+                    break;
+                    default:
+                    break;
                 }
                 mappingIndex++;
             });
@@ -1000,40 +999,57 @@ function readDirectory(dir, fileTypes, recursive) {
 }
 
 function appendRomToList(systemOptions, file) {
-
     // file type without punctuation
     let fileType = file.split(".").pop();
     // file name with extension
     let fullFileName = file.split(/(\\|\/)/g).pop();
     // file name without extension
-    let fileName = fullFileName.slice(0, -(fileType.length+1));
+    let fileName = fullFileName.slice(0, -(fileType.length + 1));
 
-    var romInfo = new Object();    
+    var romInfo = new Object();
     romInfo.displayName = fileName;
     romInfo.emulator = addSpaces(systemOptions.emuPath);
     romInfo.cwd = addSpaces(systemOptions.emuPath.replace(systemOptions.emuPath.split(/(\\|\/)/g).pop(), ''));
     romInfo.args = [];
-    systemOptions.emuArgs.forEach(function(arg){
+    systemOptions.emuArgs.forEach(function (arg) {
         if (arg === '%ROMFILE%') {
             arg = addSpaces(file);
         }
         romInfo.args.push(arg);
     });
-    // if args is still empty, push only ROM-file
+    // if args are still empty, push only ROM-file
     if (systemOptions.emuArgs.length === 0) {
         romInfo.args.push(addSpaces(file));
     }
 
+    // Check if there is a PNG file with the same name in the same directory
+    const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
+    if (fs.existsSync(pngIconPath)) {
+        romInfo.iconPath = pngIconPath;
+    } else {
+        // Use the default system icon if no matching PNG was found
+        romInfo.iconPath = './../../../icons/' + systemOptions.systemId + '.png';
+    }
+
     // playlist styling
     if (fileType === "m3u") {
-        // romInfo.displayName = "&#8251; " + romInfo.displayName + " (Playlist)";
         romInfo.displayName = romInfo.displayName + " (Playlist)";
     }
 
-    let entry = $('<tr class="rom" tabindex="1"><td>'+romInfo.displayName+'</td></tr>');
+    let entry = $('<tr class="rom" tabindex="1"></tr>');
+    let iconAndName = $('<td style="vertical-align: middle; text-align: left;"></td>');
+    let icon = $('<img class="rom_icon" src="' + romInfo.iconPath + '" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;"/>');
+    let name = $('<span style="vertical-align: middle;">' + romInfo.displayName + '</span>');
+    iconAndName.append(icon).append(name);
+    entry.append(iconAndName);
     entry.data('rom_info', romInfo);
     $('#roms').append(entry);
 }
+
+
+
+
+
 
 
 function addSpaces(path) {
