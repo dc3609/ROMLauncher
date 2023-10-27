@@ -1025,28 +1025,22 @@ function appendRomToList(systemOptions, file) {
         romInfo.args.push(addSpaces(file));
     }
 
-    // Check if it's a .lnk file
-    if (fileType === 'lnk') {
-        const lnkIconPath = extractIconFromShortcut(file);
-        if (lnkIconPath) {
-            romInfo.iconPath = lnkIconPath;
-        } else {
-            // If no icon is found in the .lnk, try to find a PNG icon
-            const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
-            if (fs.existsSync(pngIconPath)) {
-                romInfo.iconPath = pngIconPath;
+      // Check if there is a PNG file with the same name in the same directory
+    const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
+    if (fs.existsSync(pngIconPath)) {
+        romInfo.iconPath = pngIconPath;
+    } else {
+        // If no PNG icon is found, check if it's a .lnk file
+        if (fileType === 'lnk') {
+            const lnkIconPath = extractIconFromShortcut(file);
+            if (lnkIconPath) {
+                romInfo.iconPath = lnkIconPath;
             } else {
-                // Use the default system icon if no matching PNG was found
+                // Use the default system icon if no matching PNG or .lnk icon was found
                 romInfo.iconPath = './../../../icons/' + systemOptions.systemId + '.png';
             }
-        }
-    } else {
-        // Check if there is a PNG file with the same name in the same directory
-        const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
-        if (fs.existsSync(pngIconPath)) {
-            romInfo.iconPath = pngIconPath;
         } else {
-            // Use the default system icon if no matching PNG was found
+            // Use the default system icon if no matching PNG or .lnk icon was found
             romInfo.iconPath = './../../../icons/' + systemOptions.systemId + '.png';
         }
     }
