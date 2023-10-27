@@ -1,5 +1,6 @@
 $(document).ready(() => {
     
+	
     // Upgrade settings file to latest version
     upgradeSettings();
     
@@ -998,9 +999,6 @@ function readDirectory(dir, fileTypes, recursive) {
     return results;
 }
 
-
-
-
 function appendRomToList(systemOptions, file) {
     // file type without punctuation
     let fileType = file.split(".").pop();
@@ -1025,32 +1023,14 @@ function appendRomToList(systemOptions, file) {
         romInfo.args.push(addSpaces(file));
     }
 
-    // Check if it's a .lnk file
-    if (fileType === 'lnk') {
-        const lnkIconPath = extractIconFromShortcut(file);
-        if (lnkIconPath) {
-            romInfo.iconPath = lnkIconPath;
-        } else {
-            // If no icon is found in the .lnk, try to find a PNG icon
-            const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
-            if (fs.existsSync(pngIconPath)) {
-                romInfo.iconPath = pngIconPath;
-            } else {
-                // Use the default system icon if no matching PNG was found
-                romInfo.iconPath = './../../../icons/' + systemOptions.systemId + '.png';
-            }
-        }
+    // Check if there is a PNG file with the same name in the same directory
+    const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
+    if (fs.existsSync(pngIconPath)) {
+        romInfo.iconPath = pngIconPath;
     } else {
-        // Check if there is a PNG file with the same name in the same directory
-        const pngIconPath = path.dirname(file) + '/' + fileName + '.png';
-        if (fs.existsSync(pngIconPath)) {
-            romInfo.iconPath = pngIconPath;
-        } else {
-            // Use the default system icon if no matching PNG was found
-            romInfo.iconPath = './../../../icons/' + systemOptions.systemId + '.png';
-        }
+        // Use the default system icon if no matching PNG was found
+        romInfo.iconPath = './../../../icons/' + systemOptions.systemId + '.png';
     }
-
 
     // playlist styling
     if (fileType === "m3u") {
@@ -1069,17 +1049,7 @@ function appendRomToList(systemOptions, file) {
 
 
 
-function extractIconFromShortcut(lnkPath) {
-    try {
-        const shortcut = shell.readShortcutLink(lnkPath);
-        if (shortcut.icon) {
-            return shortcut.icon;
-        }
-    } catch (error) {
-        console.error('Error extracting icon from shortcut:', error);
-    }
-    return null;
-}
+
 
 
 
